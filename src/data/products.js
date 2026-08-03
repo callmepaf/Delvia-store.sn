@@ -49,7 +49,7 @@ export const products = [
     description:
       "Un mélange de super-aliments verts, riche en nutriments essentiels, pour purifier et revitaliser l'organisme.",
     sizes: [
-      { format: '100g', price: 13000 },
+      { format: '100g', price: 15000 },
       { format: '200g', price: 25000 },
     ],
   },
