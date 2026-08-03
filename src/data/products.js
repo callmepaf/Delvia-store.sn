@@ -1,8 +1,8 @@
-import superProteinVanilla from '../assets/products/super-protein-vanilla.png'
-import superProteinChocolate from '../assets/products/super-protein-chocolate.png'
-import superBoost from '../assets/products/super-boost.png'
-import superGreen from '../assets/products/super-green.png'
-import spiruline from '../assets/products/spiruline.png'
+import superProteinVanilla from '../assets/products/super-protein-vanilla.webp'
+import superProteinChocolate from '../assets/products/super-protein-chocolate.webp'
+import superBoost from '../assets/products/super-boost.webp'
+import superGreen from '../assets/products/super-green.webp'
+import spiruline from '../assets/products/spiruline.webp'
 
 export const products = [
   {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { formatCFA } from '../data/products'
 import { useCart } from '../context/CartContext'
+import LazyImage from './LazyImage'
 
 export default function ProductModal({ product, onClose }) {
   const { addItem } = useCart()
@@ -30,7 +31,12 @@ export default function ProductModal({ product, onClose }) {
         </button>
 
         <div className="w-full md:w-1/2 bg-gray-50 flex items-center justify-center p-8">
-          <img src={product.image} alt={product.name} className="max-h-full object-contain drop-shadow-xl" />
+          <LazyImage
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full"
+            imgClassName="h-full w-full max-h-full object-contain drop-shadow-xl"
+          />
         </div>
 
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">

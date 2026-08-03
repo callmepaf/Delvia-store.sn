@@ -1,5 +1,6 @@
 import { formatCFA } from '../data/products'
 import { useCart } from '../context/CartContext'
+import LazyImage from './LazyImage'
 
 export default function ProductCard({ product, onView }) {
   const { addItem } = useCart()
@@ -10,10 +11,11 @@ export default function ProductCard({ product, onView }) {
         className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 text-left"
         onClick={() => onView(product)}
       >
-        <img
+        <LazyImage
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition group-hover:scale-105"
+          className="h-full w-full"
+          imgClassName="h-full w-full object-cover transition group-hover:scale-105"
         />
       </button>
       <div className="mt-4 flex flex-col grow">

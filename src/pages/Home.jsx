@@ -2,19 +2,29 @@ import { useState } from 'react'
 import { products } from '../data/products'
 import ProductCard from '../components/ProductCard'
 import ProductModal from '../components/ProductModal'
-import heroImage from '../assets/products/hero.png'
-import drAroua from '../assets/products/dr-aroua.jpeg'
+import LazyImage from '../components/LazyImage'
+import heroImage from '../assets/products/hero.webp'
+import drAroua from '../assets/products/dr-aroua.webp'
 import { buildWhatsAppLink, CONTACT_WHATSAPP_NUMBER } from '../utils/whatsapp'
 
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [heroLoaded, setHeroLoaded] = useState(false)
 
   return (
     <>
-      <header
-        className="relative bg-cover bg-center bg-no-repeat h-[70vh] lg:h-screen flex items-center justify-center"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
+      <header className="relative h-[70vh] lg:h-screen flex items-center justify-center overflow-hidden bg-green-900">
+        <img
+          src={heroImage}
+          alt=""
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          onLoad={() => setHeroLoaded(true)}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+            heroLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
         <div className="absolute inset-0 bg-black/30" />
 
         <div className="relative px-4 text-center">
@@ -45,7 +55,12 @@ export default function Home() {
           <h2 className="text-center text-4xl font-serif italic mb-12 font-thin">A PROPOS</h2>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
             <div className="rounded-2xl overflow-hidden shadow-xl">
-              <img src={drAroua} alt="Dr Aroua Dellale" className="w-full object-cover h-150" />
+              <LazyImage
+                src={drAroua}
+                alt="Dr Aroua Dellale"
+                className="w-full h-150"
+                imgClassName="w-full h-full object-cover"
+              />
             </div>
             <div className="space-y-12 max-w-4xl mx-auto px-4 py-12">
               <div className="space-y-6">
