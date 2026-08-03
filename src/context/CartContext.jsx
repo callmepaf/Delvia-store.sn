@@ -14,6 +14,10 @@ function readStoredCart() {
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(readStoredCart)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const openCart = () => setIsOpen(true)
+  const closeCart = () => setIsOpen(false)
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
@@ -45,7 +49,7 @@ export function CartProvider({ children }) {
   const count = useMemo(() => items.reduce((sum, item) => sum + item.qty, 0), [items])
   const total = useMemo(() => items.reduce((sum, item) => sum + item.qty * item.price, 0), [items])
 
-  const value = { items, addItem, removeItem, setQty, clearCart, count, total }
+  const value = { items, addItem, removeItem, setQty, clearCart, count, total, isOpen, openCart, closeCart }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

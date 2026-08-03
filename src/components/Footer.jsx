@@ -1,4 +1,8 @@
+import { useCart } from '../context/CartContext'
+
 export default function Footer() {
+  const { openCart } = useCart()
+
   return (
     <footer className="bg-green-950 text-white py-16 border-t border-green-800">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 text-center md:text-left">
@@ -56,9 +60,9 @@ export default function Footer() {
             <a href="https://wa.me/221781199613" className="text-sm font-light hover:text-green-400 transition">
               Nous écrire sur WhatsApp
             </a>
-            <a href="/cart" className="text-sm font-light hover:text-green-400 transition">
+            <button onClick={openCart} className="text-sm font-light hover:text-green-400 transition text-left">
               Mon panier
-            </a>
+            </button>
           </nav>
         </div>
 
