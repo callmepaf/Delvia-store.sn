@@ -2,14 +2,22 @@ import { useState } from 'react'
 import { formatCFA } from '../data/products'
 import { useCart } from '../context/CartContext'
 import LazyImage from './LazyImage'
+import SizePickerModal from './SizePickerModal'
 
 export default function ProductModal({ product, onClose }) {
   const { addItem } = useCart()
   const [qty, setQty] = useState(1)
+  const [pickingSize, setPickingSize] = useState(false)
 
   if (!product) return null
 
+  const hasSizes = Boolean(product.sizes?.length)
+
   const handleAdd = () => {
+    if (hasSizes) {
+      setPickingSize(true)
+      return
+    }
     addItem(product, qty)
     onClose()
   }
@@ -42,9 +50,12 @@ export default function ProductModal({ product, onClose }) {
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <span className="text-green-600 font-bold tracking-widest text-xs uppercase mb-2">Produit Naturel</span>
           <h2 className="text-3xl font-serif italic text-gray-900 mb-4">
-            {product.name} ({product.format})
+            {product.name}{!hasSizes && ` (${product.format})`}
           </h2>
-          <p className="text-2xl font-medium text-green-900 mb-6">{formatCFA(product.price)}</p>
+          <p className="text-2xl font-medium text-green-900 mb-6">
+            {hasSizes && <span className="text-sm text-gray-400 font-normal">dès </span>}
+            {formatCFA(hasSizes ? product.sizes[0].price : product.price)}
+          </p>
 
           <div className="space-y-4 text-gray-600 font-light mb-8">
             <p>{product.description}</p>
@@ -54,28 +65,30 @@ export default function ProductModal({ product, onClose }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-sm font-bold text-gray-700">Quantité</span>
-            <div className="flex items-center border border-gray-200 rounded-lg">
-              <button
-                className="px-3 py-2 text-gray-600 hover:text-green-600"
-                onClick={() => setQty((q) => Math.max(1, q - 1))}
-              >
-                −
-              </button>
-              <span className="px-3 py-2 text-sm font-medium">{qty}</span>
-              <button className="px-3 py-2 text-gray-600 hover:text-green-600" onClick={() => setQty((q) => q + 1)}>
-                +
-              </button>
+          {!hasSizes && (
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-sm font-bold text-gray-700">Quantité</span>
+              <div className="flex items-center border border-gray-200 rounded-lg">
+                <button
+                  className="px-3 py-2 text-gray-600 hover:text-green-600"
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                >
+                  −
+                </button>
+                <span className="px-3 py-2 text-sm font-medium">{qty}</span>
+                <button className="px-3 py-2 text-gray-600 hover:text-green-600" onClick={() => setQty((q) => q + 1)}>
+                  +
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex flex-col gap-3">
             <button
               className="w-full bg-green-600 text-white py-4 rounded-lg font-bold hover:bg-green-700 transition shadow-lg shadow-green-200"
               onClick={handleAdd}
             >
-              AJOUTER AU PANIER
+              {hasSizes ? 'CHOISIR UN FORMAT' : 'AJOUTER AU PANIER'}
             </button>
             <p className="text-[10px] text-center text-gray-400 uppercase tracking-widest">
               Commande et paiement via WhatsApp / Livraison partout au Sénégal
@@ -83,6 +96,10 @@ export default function ProductModal({ product, onClose }) {
           </div>
         </div>
       </div>
+
+      {pickingSize && (
+        <SizePickerModal product={product} onClose={() => setPickingSize(false)} onAdded={onClose} />
+      )}
     </div>
   )
 }

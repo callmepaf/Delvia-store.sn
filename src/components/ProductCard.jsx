@@ -1,9 +1,21 @@
+import { useState } from 'react'
 import { formatCFA } from '../data/products'
 import { useCart } from '../context/CartContext'
 import LazyImage from './LazyImage'
+import SizePickerModal from './SizePickerModal'
 
 export default function ProductCard({ product, onView }) {
   const { addItem } = useCart()
+  const [pickingSize, setPickingSize] = useState(false)
+  const hasSizes = Boolean(product.sizes?.length)
+
+  const handleAddClick = () => {
+    if (hasSizes) {
+      setPickingSize(true)
+    } else {
+      addItem(product)
+    }
+  }
 
   return (
     <div className="group relative flex flex-col">
@@ -24,14 +36,19 @@ export default function ProductCard({ product, onView }) {
             {product.name} ({product.format})
           </h3>
         </button>
-        <p className="mt-1 text-lg font-medium text-green-600">{formatCFA(product.price)}</p>
+        <p className="mt-1 text-lg font-medium text-green-600">
+          {hasSizes && <span className="text-xs text-gray-400 font-normal">dès </span>}
+          {formatCFA(hasSizes ? product.sizes[0].price : product.price)}
+        </p>
         <button
           className="mt-4 w-full bg-green-600 py-2 text-white text-sm font-bold rounded hover:bg-green-900 transition"
-          onClick={() => addItem(product)}
+          onClick={handleAddClick}
         >
           Ajouter au panier
         </button>
       </div>
+
+      {pickingSize && <SizePickerModal product={product} onClose={() => setPickingSize(false)} />}
     </div>
   )
 }
