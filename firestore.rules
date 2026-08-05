@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /products/{productId} {
+      // Storefront needs to read the catalog without logging in.
+      allow read: if true;
+
+      // Only the signed-in admin (src/pages/Admin.jsx) may add/edit/delete
+      // products. No client ever writes here unauthenticated.
+      allow create, update: if request.auth != null
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 200
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 2000
+        && request.resource.data.sizes is list
+        && request.resource.data.sizes.size() > 0
+        && request.resource.data.image is string;
+
+      allow delete: if request.auth != null;
+    }
+
+    // Everything else is closed by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
