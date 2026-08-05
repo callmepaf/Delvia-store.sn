@@ -11,20 +11,21 @@ export default function ProductModal({ product, onClose }) {
 
   if (!product) return null
 
-  const hasSizes = Boolean(product.sizes?.length)
+  const hasMultipleSizes = product.sizes.length > 1
+  const defaultSize = product.sizes[0]
 
   const handleAdd = () => {
-    if (hasSizes) {
+    if (hasMultipleSizes) {
       setPickingSize(true)
       return
     }
-    addItem(product, qty)
+    addItem({ ...product, format: defaultSize.format, price: defaultSize.price }, qty)
     onClose()
   }
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative flex flex-col md:flex-row">
@@ -50,11 +51,11 @@ export default function ProductModal({ product, onClose }) {
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <span className="text-green-600 font-bold tracking-widest text-xs uppercase mb-2">Produit Naturel</span>
           <h2 className="text-3xl font-serif italic text-gray-900 mb-4">
-            {product.name}{!hasSizes && ` (${product.format})`}
+            {product.name}{!hasMultipleSizes && ` (${defaultSize.format})`}
           </h2>
           <p className="text-2xl font-medium text-green-900 mb-6">
-            {hasSizes && <span className="text-sm text-gray-400 font-normal">dès </span>}
-            {formatCFA(hasSizes ? product.sizes[0].price : product.price)}
+            {hasMultipleSizes && <span className="text-sm text-gray-400 font-normal">dès </span>}
+            {formatCFA(defaultSize.price)}
           </p>
 
           <div className="space-y-4 text-gray-600 font-light mb-8">
@@ -65,7 +66,7 @@ export default function ProductModal({ product, onClose }) {
             </div>
           </div>
 
-          {!hasSizes && (
+          {!hasMultipleSizes && (
             <div className="flex items-center gap-3 mb-6">
               <span className="text-sm font-bold text-gray-700">Quantité</span>
               <div className="flex items-center border border-gray-200 rounded-lg">
@@ -88,7 +89,7 @@ export default function ProductModal({ product, onClose }) {
               className="w-full bg-green-600 text-white py-4 rounded-lg font-bold hover:bg-green-700 transition shadow-lg shadow-green-200"
               onClick={handleAdd}
             >
-              {hasSizes ? 'CHOISIR UN FORMAT' : 'AJOUTER AU PANIER'}
+              {hasMultipleSizes ? 'CHOISIR UN FORMAT' : 'AJOUTER AU PANIER'}
             </button>
             <p className="text-[10px] text-center text-gray-400 uppercase tracking-widest">
               Commande et paiement via WhatsApp / Livraison partout au Sénégal

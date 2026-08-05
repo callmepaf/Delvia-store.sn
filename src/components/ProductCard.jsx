@@ -7,13 +7,14 @@ import SizePickerModal from './SizePickerModal'
 export default function ProductCard({ product, onView }) {
   const { addItem } = useCart()
   const [pickingSize, setPickingSize] = useState(false)
-  const hasSizes = Boolean(product.sizes?.length)
+  const hasMultipleSizes = product.sizes.length > 1
+  const defaultSize = product.sizes[0]
 
   const handleAddClick = () => {
-    if (hasSizes) {
+    if (hasMultipleSizes) {
       setPickingSize(true)
     } else {
-      addItem(product)
+      addItem({ ...product, format: defaultSize.format, price: defaultSize.price })
     }
   }
 
@@ -33,12 +34,12 @@ export default function ProductCard({ product, onView }) {
       <div className="mt-4 flex flex-col grow">
         <button className="text-left" onClick={() => onView(product)}>
           <h3 className="text-sm font-bold text-gray-900">
-            {product.name} ({product.format})
+            {product.name} ({defaultSize.format})
           </h3>
         </button>
         <p className="mt-1 text-lg font-medium text-green-600">
-          {hasSizes && <span className="text-xs text-gray-400 font-normal">dès </span>}
-          {formatCFA(hasSizes ? product.sizes[0].price : product.price)}
+          {hasMultipleSizes && <span className="text-xs text-gray-400 font-normal">dès </span>}
+          {formatCFA(defaultSize.price)}
         </p>
         <button
           className="mt-4 w-full bg-green-600 py-2 text-white text-sm font-bold rounded hover:bg-green-900 transition"

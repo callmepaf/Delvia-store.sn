@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { products } from '../data/products'
+import { useProducts } from '../data/products'
 import ProductCard from '../components/ProductCard'
 import ProductModal from '../components/ProductModal'
 import LazyImage from '../components/LazyImage'
@@ -10,6 +10,7 @@ import { buildWhatsAppLink, CONTACT_WHATSAPP_NUMBER } from '../utils/whatsapp'
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [heroLoaded, setHeroLoaded] = useState(false)
+  const { products } = useProducts()
 
   return (
     <>
