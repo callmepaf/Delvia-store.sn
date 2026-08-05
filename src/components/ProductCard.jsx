@@ -21,7 +21,7 @@ export default function ProductCard({ product, onView }) {
   return (
     <div className="group relative flex flex-col">
       <button
-        className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 text-left"
+        className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 text-left outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
         onClick={() => onView(product)}
       >
         <LazyImage
@@ -32,7 +32,10 @@ export default function ProductCard({ product, onView }) {
         />
       </button>
       <div className="mt-4 flex flex-col grow">
-        <button className="text-left" onClick={() => onView(product)}>
+        <button
+          className="text-left outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 rounded"
+          onClick={() => onView(product)}
+        >
           <h3 className="text-sm font-bold text-gray-900">
             {product.name} ({defaultSize.format})
           </h3>
@@ -42,7 +45,7 @@ export default function ProductCard({ product, onView }) {
           {formatCFA(defaultSize.price)}
         </p>
         <button
-          className="mt-4 w-full bg-green-600 py-2 text-white text-sm font-bold rounded hover:bg-green-900 transition"
+          className="mt-4 w-full bg-green-600 py-2 text-white text-sm font-bold rounded hover:bg-green-900 transition outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
           onClick={handleAddClick}
         >
           Ajouter au panier
