@@ -6,7 +6,7 @@ import CartModal from './CartModal'
 
 export default function Layout() {
   return (
-    <div className="bg-white font-sans antialiased min-h-screen flex flex-col">
+    <div className="bg-background text-foreground font-sans antialiased min-h-screen flex flex-col">
       <Navbar />
       <div className="grow">
         <Outlet />
