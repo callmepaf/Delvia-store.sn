@@ -21,7 +21,7 @@ export default function Navbar() {
             DELVIA<span className="text-green-600 italic"> N/\TUREL</span>
           </Link>
 
-          <div className="hidden md:flex flex-1 items-center gap-6">
+          <div className="hidden md:flex flex-1 items-center justify-center gap-6">
             {navLinks.map((link) => (
               <a key={link.label} className="text-sm text-muted-foreground transition-colors hover:text-foreground" href={link.to}>
                 {link.label}
