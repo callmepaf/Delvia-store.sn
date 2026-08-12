@@ -1,10 +1,11 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { formatCFA } from '../data/products'
 import { useCart } from '../context/CartContext'
 import LazyImage from './LazyImage'
 import SizePickerModal from './SizePickerModal'
 
-export default function ProductCard({ product, onView }) {
+export default function ProductCard({ product }) {
   const { addItem } = useCart()
   const [pickingSize, setPickingSize] = useState(false)
   const hasMultipleSizes = product.sizes.length > 1
@@ -20,9 +21,9 @@ export default function ProductCard({ product, onView }) {
 
   return (
     <div className="group relative flex flex-col">
-      <button
-        className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 text-left outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
-        onClick={() => onView(product)}
+      <Link
+        to={`/produits/${product.id}`}
+        className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 block outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
       >
         <LazyImage
           src={product.image}
@@ -30,16 +31,16 @@ export default function ProductCard({ product, onView }) {
           className="h-full w-full"
           imgClassName="h-full w-full object-cover transition group-hover:scale-105"
         />
-      </button>
+      </Link>
       <div className="mt-4 flex flex-col grow">
-        <button
+        <Link
+          to={`/produits/${product.id}`}
           className="text-left outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 rounded"
-          onClick={() => onView(product)}
         >
           <h3 className="text-sm font-bold text-gray-900">
             {product.name} ({defaultSize.format})
           </h3>
-        </button>
+        </Link>
         <p className="mt-1 text-lg font-medium text-green-600">
           {hasMultipleSizes && <span className="text-xs text-gray-400 font-normal">dès </span>}
           {formatCFA(defaultSize.price)}

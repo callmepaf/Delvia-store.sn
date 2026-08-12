@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { useProducts } from '../data/products'
 import ProductCard from '../components/ProductCard'
-import ProductModal from '../components/ProductModal'
 import LazyImage from '../components/LazyImage'
 import heroImage from '../assets/products/hero.webp'
 import drAroua from '../assets/products/dr-aroua.webp'
 import { buildWhatsAppLink, CONTACT_WHATSAPP_NUMBER } from '../utils/whatsapp'
 
 export default function Home() {
-  const [selectedProduct, setSelectedProduct] = useState(null)
   const [heroLoaded, setHeroLoaded] = useState(false)
   const { products } = useProducts()
 
@@ -47,7 +45,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} onView={setSelectedProduct} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </section>
@@ -124,10 +122,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
-      {selectedProduct && (
-        <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-      )}
     </>
   )
 }

@@ -14,7 +14,7 @@ export default function LazyImage({
   return (
     <div className={`relative overflow-hidden bg-gray-100 ${className}`}>
       <div
-        className={`absolute inset-0 bg-gray-200 animate-pulse transition-opacity duration-500 ${
+        className={`absolute inset-0 bg-gray-200 transition-opacity duration-500 ${
           loaded ? 'opacity-0' : 'opacity-100'
         }`}
       />
