@@ -17,8 +17,8 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md" aria-label="Navigation principale">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex h-16 items-center gap-6">
-          <Link to="/" className="label-mono shrink-0 text-foreground">
-            Delvia N/\turel
+          <Link to="/" className="shrink-0 text-2xl font-bold tracking-tighter text-green-900">
+            DELVIA<span className="text-green-600 italic"> N/\TUREL</span>
           </Link>
 
           <div className="hidden md:flex flex-1 items-center gap-6">
