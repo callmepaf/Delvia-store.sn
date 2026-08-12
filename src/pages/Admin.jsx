@@ -11,6 +11,7 @@ import { getDownloadURL, ref, uploadBytes, deleteObject } from 'firebase/storage
 import { db } from '../firebase'
 import { auth, storage } from '../firebaseAdmin'
 import { useProducts, formatCFA } from '../data/products'
+import Button from '../components/ui/Button'
 
 // The admin types a plain username; Firebase Auth needs an email, so we map
 // it to a fixed, non-guessable address behind the scenes.
@@ -41,12 +42,14 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-green-950 flex items-center justify-center p-4">
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-sm space-y-5">
-        <h1 className="text-2xl font-serif italic text-center text-gray-900 mb-2">Administration Delvia</h1>
+    <div className="min-h-screen bg-primary flex items-center justify-center p-4">
+      <form onSubmit={handleSubmit} className="bg-card rounded-lg border border-border p-10 w-full max-w-sm space-y-5">
+        <h1 className="text-2xl font-display italic font-normal tracking-[-0.01em] text-center text-foreground mb-2">
+          Administration Delvia
+        </h1>
         <div className="space-y-3">
           <input
-            className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+            className="w-full h-10 border border-border rounded-md bg-background px-3 text-sm text-foreground outline-none focus:border-ring transition-colors"
             placeholder="Nom d'utilisateur"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -54,21 +57,17 @@ function LoginForm() {
           />
           <input
             type="password"
-            className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+            className="w-full h-10 border border-border rounded-md bg-background px-3 text-sm text-foreground outline-none focus:border-ring transition-colors"
             placeholder="Mot de passe"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-900 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition disabled:opacity-60"
-        >
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        <Button type="submit" disabled={loading} className="w-full h-11">
           {loading ? 'Connexion...' : 'Se connecter'}
-        </button>
+        </Button>
       </form>
     </div>
   )
@@ -154,14 +153,14 @@ function AddProductForm({ onSaved }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-green-50 rounded-2xl p-8 space-y-6">
-      <h2 className="text-xl font-serif italic">Ajouter un produit</h2>
+    <form onSubmit={handleSubmit} className="bg-secondary rounded-lg p-8 space-y-6">
+      <h2 className="text-xl font-display italic font-normal tracking-[-0.01em] text-foreground">Ajouter un produit</h2>
 
       <div className="space-y-3">
         <label className="block">
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Nom du produit</span>
+          <span className="label-mono text-muted-foreground">Nom du produit</span>
           <input
-            className="mt-1 w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+            className="mt-1 w-full h-10 border border-border rounded-md bg-background px-3 text-sm text-foreground outline-none focus:border-ring transition-colors"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ex: Super Detox"
@@ -169,9 +168,9 @@ function AddProductForm({ onSaved }) {
         </label>
 
         <label className="block">
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Description</span>
+          <span className="label-mono text-muted-foreground">Description</span>
           <textarea
-            className="mt-1 w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+            className="mt-1 w-full border border-border rounded-md bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-ring transition-colors"
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -180,12 +179,12 @@ function AddProductForm({ onSaved }) {
         </label>
 
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Formats et prix</span>
+          <span className="label-mono text-muted-foreground">Formats et prix</span>
           <div className="mt-1 space-y-2">
             {sizes.map((row, i) => (
               <div key={i} className="flex gap-2">
                 <input
-                  className="flex-1 border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+                  className="flex-1 h-10 border border-border rounded-md bg-background px-3 text-sm text-foreground outline-none focus:border-ring transition-colors"
                   placeholder="Format (ex: 250g)"
                   value={row.format}
                   onChange={(e) => updateSize(i, 'format', e.target.value)}
@@ -193,7 +192,7 @@ function AddProductForm({ onSaved }) {
                 <input
                   type="number"
                   min="0"
-                  className="w-32 border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-green-500"
+                  className="w-32 h-10 border border-border rounded-md bg-background px-3 text-sm text-foreground outline-none focus:border-ring transition-colors"
                   placeholder="Prix CFA"
                   value={row.price}
                   onChange={(e) => updateSize(i, 'price', e.target.value)}
@@ -202,7 +201,7 @@ function AddProductForm({ onSaved }) {
                   <button
                     type="button"
                     onClick={() => removeSizeRow(i)}
-                    className="text-gray-400 hover:text-red-500 px-2"
+                    className="text-muted-foreground hover:text-destructive px-2"
                     aria-label="Retirer ce format"
                   >
                     ✕
@@ -214,14 +213,14 @@ function AddProductForm({ onSaved }) {
           <button
             type="button"
             onClick={addSizeRow}
-            className="mt-2 text-xs font-bold text-green-700 hover:text-green-900 uppercase tracking-widest"
+            className="mt-2 label-mono text-foreground hover:text-muted-foreground transition-colors"
           >
             + Ajouter un format
           </button>
         </div>
 
         <label className="block">
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Photo du produit</span>
+          <span className="label-mono text-muted-foreground">Photo du produit</span>
           <input
             type="file"
             accept="image/*"
@@ -239,21 +238,17 @@ function AddProductForm({ onSaved }) {
               setError('')
               setFile(picked)
             }}
-            className="mt-1 w-full text-sm"
+            className="mt-1 w-full text-sm text-muted-foreground"
           />
         </label>
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
-      {success && <p className="text-sm text-green-700 font-medium">Produit ajouté avec succès.</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      {success && <p className="text-sm text-foreground">Produit ajouté avec succès.</p>}
 
-      <button
-        type="submit"
-        disabled={saving}
-        className="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition disabled:opacity-60"
-      >
+      <Button type="submit" disabled={saving} className="w-full h-11">
         {saving ? 'Ajout en cours...' : 'Ajouter le produit'}
-      </button>
+      </Button>
     </form>
   )
 }
@@ -279,25 +274,25 @@ function ProductList({ products, loading, onDeleted }) {
     }
   }
 
-  if (loading) return <p className="text-sm text-gray-400">Chargement...</p>
+  if (loading) return <p className="text-sm text-muted-foreground">Chargement...</p>
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-serif italic">Produits actuels</h2>
+      <h2 className="text-xl font-display italic font-normal tracking-[-0.01em] text-foreground">Produits actuels</h2>
       <div className="space-y-3">
         {products.map((product) => (
-          <div key={product.id} className="flex items-center gap-4 bg-white border border-gray-100 rounded-lg p-3">
-            <img src={product.image} alt={product.name} className="h-14 w-14 rounded-md object-cover bg-gray-100" />
+          <div key={product.id} className="flex items-center gap-4 bg-card border border-border rounded-md p-3">
+            <img src={product.image} alt={product.name} className="h-14 w-14 rounded-md object-cover bg-secondary" />
             <div className="grow">
-              <p className="font-bold text-gray-900 text-sm">{product.name}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-medium text-foreground">{product.name}</p>
+              <p className="text-xs text-muted-foreground">
                 {product.sizes.map((s) => `${s.format} — ${formatCFA(s.price)}`).join(' · ')}
               </p>
             </div>
             <button
               onClick={() => handleDelete(product)}
               disabled={deletingId === product.id}
-              className="text-xs text-gray-400 hover:text-red-500 uppercase tracking-widest disabled:opacity-50"
+              className="label-mono text-muted-foreground hover:text-destructive disabled:opacity-50 transition-colors"
             >
               {deletingId === product.id ? '...' : 'Supprimer'}
             </button>
@@ -312,18 +307,18 @@ function Dashboard() {
   const { products, loading, refetch } = useProducts()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-green-950 text-white px-6 py-5 flex items-center justify-between">
-        <h1 className="text-xl font-serif italic">Administration Delvia</h1>
+    <div className="min-h-screen bg-background">
+      <div className="bg-primary text-primary-foreground px-6 py-5 flex items-center justify-between">
+        <h1 className="text-xl font-display italic font-normal tracking-[-0.01em]">Administration Delvia</h1>
         <button
           onClick={() => signOut(auth)}
-          className="text-xs font-bold uppercase tracking-widest text-green-200 hover:text-white transition"
+          className="label-mono text-primary-foreground/70 hover:text-primary-foreground transition-colors"
         >
           Déconnexion
         </button>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-10">
         <AddProductForm onSaved={refetch} />
         <ProductList products={products} loading={loading} onDeleted={refetch} />
       </div>
