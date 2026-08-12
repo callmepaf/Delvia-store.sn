@@ -85,7 +85,7 @@ export const seedProducts = [
     image: granolaChocolat,
     description:
       "Notre granola gourmand au chocolat noir, riche en protéines, pour un petit-déjeuner énergisant et satiétant toute la matinée.",
-    sizes: [{ format: '250g', price: 5400 }],
+    sizes: [{ format: '250g', price: 5000 }],
   },
 ]
 

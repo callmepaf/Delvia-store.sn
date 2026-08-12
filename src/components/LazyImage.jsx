@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 
 export default function LazyImage({
@@ -12,12 +11,7 @@ export default function LazyImage({
   const [loaded, setLoaded] = useState(false)
 
   return (
-    <div className={`relative overflow-hidden bg-gray-100 ${className}`}>
-      <div
-        className={`absolute inset-0 bg-gray-200 transition-opacity duration-500 ${
-          loaded ? 'opacity-0' : 'opacity-100'
-        }`}
-      />
+    <div className={`relative overflow-hidden bg-secondary ${className}`}>
       <img
         src={src}
         alt={alt}

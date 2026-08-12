@@ -4,6 +4,7 @@ import { formatCFA } from '../data/products'
 import { useCart } from '../context/CartContext'
 import LazyImage from './LazyImage'
 import SizePickerModal from './SizePickerModal'
+import Button from './ui/Button'
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart()
@@ -23,34 +24,31 @@ export default function ProductCard({ product }) {
     <div className="group relative flex flex-col">
       <Link
         to={`/produits/${product.id}`}
-        className="aspect-square w-full overflow-hidden rounded-lg bg-gray-100 block outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
+        className="aspect-square w-full overflow-hidden rounded-md bg-secondary block outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         <LazyImage
           src={product.image}
           alt={product.name}
           className="h-full w-full"
-          imgClassName="h-full w-full object-cover transition group-hover:scale-105"
+          imgClassName="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
       </Link>
       <div className="mt-4 flex flex-col grow">
         <Link
           to={`/produits/${product.id}`}
-          className="text-left outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2 rounded"
+          className="text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded"
         >
-          <h3 className="text-sm font-bold text-gray-900">
+          <h3 className="text-sm font-medium text-foreground">
             {product.name} ({defaultSize.format})
           </h3>
         </Link>
-        <p className="mt-1 text-lg font-medium text-green-600">
-          {hasMultipleSizes && <span className="text-xs text-gray-400 font-normal">dès </span>}
+        <p className="mt-1 font-mono text-sm text-foreground">
+          {hasMultipleSizes && <span className="text-xs text-muted-foreground">dès </span>}
           {formatCFA(defaultSize.price)}
         </p>
-        <button
-          className="mt-4 w-full bg-green-600 py-2 text-white text-sm font-bold rounded hover:bg-green-900 transition outline-none focus-visible:ring-2 focus-visible:ring-green-600 focus-visible:ring-offset-2"
-          onClick={handleAddClick}
-        >
+        <Button className="mt-4 w-full h-10" onClick={handleAddClick}>
           Ajouter au panier
-        </button>
+        </Button>
       </div>
 
       {pickingSize && <SizePickerModal product={product} onClose={() => setPickingSize(false)} />}
