@@ -6,6 +6,7 @@ import {
   deleteDoc,
   doc,
   serverTimestamp,
+  updateDoc,
 } from 'firebase/firestore/lite'
 import { getDownloadURL, ref, uploadBytes, deleteObject } from 'firebase/storage'
 import { db } from '../firebase'
@@ -85,7 +86,9 @@ function validateImageFile(file) {
   return null
 }
 
-function AddProductForm({ onSaved }) {
+function ProductForm({ product, onSaved, onCancel }) {
+  const isEditing = Boolean(product)
+
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [sizes, setSizes] = useState([emptySizeRow()])
@@ -93,6 +96,19 @@ function AddProductForm({ onSaved }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  useEffect(() => {
+    setName(product?.name ?? '')
+    setDescription(product?.description ?? '')
+    setSizes(
+      product?.sizes?.length
+        ? product.sizes.map((s) => ({ format: s.format, price: String(s.price) }))
+        : [emptySizeRow()]
+    )
+    setFile(null)
+    setError('')
+    setSuccess(false)
+  }, [product])
 
   const updateSize = (index, field, value) => {
     setSizes((rows) => rows.map((row, i) => (i === index ? { ...row, [field]: value } : row)))
@@ -117,32 +133,50 @@ function AddProductForm({ onSaved }) {
       .map((s) => ({ format: s.format.trim(), price: Number(s.price) }))
       .filter((s) => s.format && s.price > 0)
 
-    if (!name.trim() || !description.trim() || !file || cleanSizes.length === 0) {
+    if (!name.trim() || !description.trim() || cleanSizes.length === 0 || (!isEditing && !file)) {
       setError('Merci de remplir le nom, la description, au moins un format/prix, et une image.')
       return
     }
 
-    const fileError = validateImageFile(file)
-    if (fileError) {
-      setError(fileError)
-      return
+    if (file) {
+      const fileError = validateImageFile(file)
+      if (fileError) {
+        setError(fileError)
+        return
+      }
     }
 
     setSaving(true)
     try {
-      const imageRef = ref(storage, `products/${Date.now()}-${file.name}`)
-      await uploadBytes(imageRef, file)
-      const imageUrl = await getDownloadURL(imageRef)
+      let imageUrl = product?.image ?? null
+      if (file) {
+        const imageRef = ref(storage, `products/${Date.now()}-${file.name}`)
+        await uploadBytes(imageRef, file)
+        imageUrl = await getDownloadURL(imageRef)
 
-      await addDoc(collection(db, 'products'), {
+        if (isEditing && product.image?.includes('firebasestorage')) {
+          try {
+            await deleteObject(ref(storage, product.image))
+          } catch {
+            // old image already gone or not a storage URL — ignore
+          }
+        }
+      }
+
+      const payload = {
         name: name.trim(),
         description: description.trim(),
         sizes: cleanSizes,
         image: imageUrl,
-        createdAt: serverTimestamp(),
-      })
+      }
 
-      resetForm()
+      if (isEditing) {
+        await updateDoc(doc(db, 'products', product.id), payload)
+      } else {
+        await addDoc(collection(db, 'products'), { ...payload, createdAt: serverTimestamp() })
+        resetForm()
+      }
+
       setSuccess(true)
       onSaved?.()
     } catch {
@@ -154,7 +188,20 @@ function AddProductForm({ onSaved }) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-secondary rounded-lg p-8 space-y-6">
-      <h2 className="text-xl font-display italic font-normal tracking-[-0.01em] text-foreground">Ajouter un produit</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-display italic font-normal tracking-[-0.01em] text-foreground">
+          {isEditing ? `Modifier « ${product.name} »` : 'Ajouter un produit'}
+        </h2>
+        {isEditing && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="label-mono text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Annuler
+          </button>
+        )}
+      </div>
 
       <div className="space-y-3">
         <label className="block">
@@ -220,7 +267,12 @@ function AddProductForm({ onSaved }) {
         </div>
 
         <label className="block">
-          <span className="label-mono text-muted-foreground">Photo du produit</span>
+          <span className="label-mono text-muted-foreground">
+            {isEditing ? 'Photo du produit (laisser vide pour garder l’actuelle)' : 'Photo du produit'}
+          </span>
+          {isEditing && product.image && (
+            <img src={product.image} alt="" className="mt-2 h-14 w-14 rounded-md object-cover bg-card" />
+          )}
           <input
             type="file"
             accept="image/*"
@@ -244,16 +296,20 @@ function AddProductForm({ onSaved }) {
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
-      {success && <p className="text-sm text-foreground">Produit ajouté avec succès.</p>}
+      {success && (
+        <p className="text-sm text-foreground">
+          {isEditing ? 'Modifications enregistrées.' : 'Produit ajouté avec succès.'}
+        </p>
+      )}
 
       <Button type="submit" disabled={saving} className="w-full h-11">
-        {saving ? 'Ajout en cours...' : 'Ajouter le produit'}
+        {saving ? 'Enregistrement...' : isEditing ? 'Enregistrer les modifications' : 'Ajouter le produit'}
       </Button>
     </form>
   )
 }
 
-function ProductList({ products, loading, onDeleted }) {
+function ProductList({ products, loading, onEdit, onDeleted, editingId: editingProductId }) {
   const [deletingId, setDeletingId] = useState(null)
 
   const handleDelete = async (product) => {
@@ -268,7 +324,7 @@ function ProductList({ products, loading, onDeleted }) {
           // image already gone or not a storage URL — ignore
         }
       }
-      onDeleted?.()
+      onDeleted?.(product.id)
     } finally {
       setDeletingId(null)
     }
@@ -281,7 +337,12 @@ function ProductList({ products, loading, onDeleted }) {
       <h2 className="text-xl font-display italic font-normal tracking-[-0.01em] text-foreground">Produits actuels</h2>
       <div className="space-y-3">
         {products.map((product) => (
-          <div key={product.id} className="flex items-center gap-4 bg-card border border-border rounded-md p-3">
+          <div
+            key={product.id}
+            className={`flex items-center gap-4 bg-card border rounded-md p-3 ${
+              editingProductId === product.id ? 'border-ring' : 'border-border'
+            }`}
+          >
             <img src={product.image} alt={product.name} className="h-14 w-14 rounded-md object-cover bg-secondary" />
             <div className="grow">
               <p className="text-sm font-medium text-foreground">{product.name}</p>
@@ -289,6 +350,12 @@ function ProductList({ products, loading, onDeleted }) {
                 {product.sizes.map((s) => `${s.format} — ${formatCFA(s.price)}`).join(' · ')}
               </p>
             </div>
+            <button
+              onClick={() => onEdit?.(product)}
+              className="label-mono text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Modifier
+            </button>
             <button
               onClick={() => handleDelete(product)}
               disabled={deletingId === product.id}
@@ -305,6 +372,17 @@ function ProductList({ products, loading, onDeleted }) {
 
 function Dashboard() {
   const { products, loading, refetch } = useProducts()
+  const [editingProduct, setEditingProduct] = useState(null)
+
+  const handleSaved = () => {
+    setEditingProduct(null)
+    refetch()
+  }
+
+  const handleDeleted = (deletedId) => {
+    setEditingProduct((current) => (current?.id === deletedId ? null : current))
+    refetch()
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -319,8 +397,14 @@ function Dashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 lg:grid-cols-2 gap-10">
-        <AddProductForm onSaved={refetch} />
-        <ProductList products={products} loading={loading} onDeleted={refetch} />
+        <ProductForm product={editingProduct} onSaved={handleSaved} onCancel={() => setEditingProduct(null)} />
+        <ProductList
+          products={products}
+          loading={loading}
+          editingId={editingProduct?.id}
+          onEdit={setEditingProduct}
+          onDeleted={handleDeleted}
+        />
       </div>
     </div>
   )
